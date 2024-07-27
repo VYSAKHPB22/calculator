@@ -1,3 +1,4 @@
+import 'package:expressions/expressions.dart';
 import 'package:flutter/material.dart';
 
 class CalculatorController {
@@ -30,6 +31,7 @@ class CalculatorController {
       }
       expressionText.value += input;
     }
+    _evaluateExpression();
   }
 
   bool opearator(String input) {
@@ -56,11 +58,24 @@ class CalculatorController {
         return;
     }
     displayText.value = result.toString();
+
     expressionText.value += ' = ' + result.toString();
   }
 
   void clear() {
     displayText.value = '0';
     expressionText.value = '';
+  }
+
+  void _evaluateExpression() {
+    try {
+      final expression = Expression.parse(
+          expressionText.value.replaceAll('x', '*').replaceAll(' ', ''));
+      final evaluator = const ExpressionEvaluator();
+      final result = evaluator.eval(expression, {});
+      displayText.value = result.toString();
+    } catch (e) {
+      displayText.value = '';
+    }
   }
 }
